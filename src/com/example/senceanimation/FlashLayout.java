@@ -15,7 +15,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
 public class FlashLayout extends SurfaceView implements Callback,Runnable{
-//	private int paoCount = 0; 
+	private int paoCount = 0;
 	private Paint paint;
 	private Canvas canvas;
 	private int width;
@@ -30,18 +30,19 @@ public class FlashLayout extends SurfaceView implements Callback,Runnable{
 		super(context);
 		holder = getHolder();
 		holder.addCallback(this);
-		initBalls();
 		bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.qipao);
 		ballHeight = bitmap.getHeight();
 		ballWidth = bitmap.getWidth();
-//		double random = Math.random();
-//		paoCount = (int) (random * 10);//随机个数
 	}
 	
 	private void initBalls() {
-		balls.add(new BallInfo(25,105,true,true,10,5));
-		balls.add(new BallInfo(225,578,true,true,6,2));
-		balls.add(new BallInfo(796,357,true,true,7,12));
+        //随机个数和步长
+        double random = Math.random();
+        paoCount = (int) (random * 10);
+        for(int i = 0;i< paoCount;i++) {
+            double bpRandom = Math.random();
+            balls.add(new BallInfo((float) (width * bpRandom), (float) (height * bpRandom),true,true, (float) (bpRandom*10),(float) (bpRandom * 10)));
+        }
 	}
 
 	class BallInfo implements Serializable {
@@ -105,7 +106,8 @@ public class FlashLayout extends SurfaceView implements Callback,Runnable{
 		 //获取屏幕宽度   
         width = getWidth() - ballWidth;  
         //获取屏幕高度   
-        height = getHeight() - ballHeight;  
+        height = getHeight() - ballHeight;
+        initBalls();
         //启动绘图线程   
         new Thread(this).start();
 	}
@@ -139,9 +141,9 @@ public class FlashLayout extends SurfaceView implements Callback,Runnable{
 		paint.setAntiAlias(true);
 		canvas = holder.lockCanvas();
 		canvas.drawColor(Color.WHITE);
-		drawBall(balls.get(0));
-		drawBall(balls.get(1));
-		drawBall(balls.get(2));
+        for(BallInfo b :balls) {
+            drawBall(b);
+        }
 		holder.unlockCanvasAndPost(canvas);
 	}
 	
